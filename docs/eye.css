@@ -1,0 +1,27 @@
+.canvas-wrapper {
+    position: relative;
+    height: 660px;
+}
+
+.canvas-wrapper canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.space {
+    display: flex;
+}
+
+.container {
+    display: fixed;
+    position: relative;
+    margin-right: 20px;
+    border: 1px solid #00ff00;
+    width: 300px;
+}
+
+.container p {
+    margin-top: 10px;
+    margin-bottom: 1px;
+    margin-left 10px;
+}
