@@ -7,220 +7,78 @@ function getParam( name, url ){
   if( !results[2] ) return '';
   return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
+//https://www.yoheim.net/blog.php?q=20170201
+
+let data1 = jsyaml.load(`
+-
+    id: "Outer"
+    name: "外郭"
+    sliderType: "Circle"
+    createType: "fill"
+    line: #[step, min, max, value]
+        size:  [100,500,600, 50]
+        bold:  [100,500,600, 50]
+        color: [0,0,100]
+    fill:
+        color: [0,0,100]
+-
+    id: "rinkaku-out"
+    name: "黒目[輪郭]"
+    sliderType: "Circle"
+    createType: "fill"
+    line: #[step, min, max, value]
+        size:  [100,500,600, 50]
+        bold:  [100,500,600, 50]
+        color: [0,0,100]
+    fill:
+        color: [0,0,100]
+-
+    id: "rinkaku-in"
+    name: "黒目[中輪郭]"
+    sliderType: "Circle"
+    createType: "line"
+    line: #[step, min, max, value]
+        size:  [100,500,600, 50]
+        bold:  [100,500,600, 50]
+        color: [0,0,100]
+-
+    id: "Iris1"
+    name: "虹彩1"
+    dependency: "rinkaku-out"
+    sliderType: "Iris"
+    createType: ""
+    line: #[step, min, max, value]
+        numOf: [5,0,200,20]
+        bold:  [1,1,5,2]
+        long:  [10,40,100,80]
+        rad:   [1,0,360,0]
+        color: [270,100,80]
+-
+    id: "Iris2"
+    name: "虹彩2"
+    dependency: "rinkaku-out"
+    sliderType: "Iris"
+    createType: ""
+    line: #[step, min, max, value]
+        numOf: [5,0,200,20]
+        bold:  [1,1,5,2]
+        long:  [10,40,100,80]
+        rad:   [1,0,360,0]
+        color: [200,100,80]
+`);
+console.log(data1); // => { greeting: "hello", name: "world" }
 
 //基本設定
 var canvas_size= 660
 var max_outline_size = 500
 var outline_size_bold = 1
-function ira() {
-function base(context) {
-  context.translate( canvas_size/2, canvas_size/2 ) ;
-  //パスの初期化
-  context.beginPath() ;
-  context.clearRect(0, 0, canvas_size, canvas_size) ;
 
-  //白目
-  context.arc(
-  0,  0,  // 円の中心座標
-  max_outline_size / 2,           // 半径
-  0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
-  360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
-  false                   // 方向: true=反時計回りの円、false=時計回りの円
-  ) ;
-
-  //塗りつぶし[初期化]
-  context.fillStyle = "rgba(255,255,255,255)" ;
-  context.fill() ;
-
-  context.strokeStyle = "black" ; //図形の輪郭
-  context.lineWidth = outline_size_bold ;
-  context.stroke() ;
-
-  context.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
-}
-
-//content
-// L rLine
-//   L  nLine
-// L dLine
-//サイズ連動のため
-
-//黒目輪郭===================================================================================================
-function rLine(event){
-  base(context) ;
-
-  rinkaku.beginPath() ;
-  rinkaku.clearRect(0, 0, canvas_size, canvas_size) ;
-  rinkaku.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-
-  rinkaku.arc(
-    0,  0,  // 円の中心座標
-    r_line_size.value / 2 + r_line_bold.value / 2,           // 半径
-    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
-    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
-    false                   // 方向: true=反時計回りの円、false=時計回りの円
-    ) ;
-  rinkaku.lineWidth = r_line_bold.value ; //太さ
-  rColor(Event) ;
-  rinkaku.stroke() ;
-  rinkaku.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
-
-  //表示用
-  r_line_size_msg.innerText = r_line_size.value / 100 + 'mm'
-  r_line_bold_msg.innerText = r_line_bold.value / 100 + 'mm'
-  r_colorH_msg.innerText = r_colorH.value
-  r_colorS_msg.innerText = r_colorS.value
-  r_colorL_msg.innerText = r_colorL.value
-
-  //サイズ連動
-  nLine();
-}
-
-//虹彩===================================================================================================
-function nLine(event){
-  niji.beginPath() ;
-  niji.clearRect(0, 0, canvas_size, canvas_size) ;
-  niji.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-  niji.lineWidth = n_lines_bold.value ;
-
-  var rad_now = 0 ;
-  var lines = n_lines.value ;
-  var long = n_lines_long.value ;
-  var lise_size = (r_line_size.value - r_line_bold.value ) / 2
-  if (rad < 10) { rad = 5 ; }
-  var rad_now = 360 ;
-  if (lines == 0) { rad_now = -1 ; }
-
-  while ( lines > 0 && rad_now > 0 ) {
-    var rad = rad_now / lines
-    var rad_run = Math.max(Math.floor( getRandomArbitrary(6, 14) ) / 10 * rad , 1) ; //0.3倍～1.4倍
-    niji.moveTo(long * getRandomArbitrary(7, 10) / 10, 0) ;
-    niji.lineTo(lise_size * getRandomArbitrary(9, 10) / 10, 0) ;
-    niji.rotate( rad_run * Math.PI / 180 ) ;
-    //判定式
-    lines -= 1
-    rad_now -= rad_run
-  }
-
-  nColor(Event) ;
-  niji.stroke() ;
-  niji.translate( -canvas_size/2, -canvas_size/2 ) ; //　戻す
-
-  //表示用
-  n_lines_msg.innerText = n_lines.value
-  n_lines_bold_msg.innerText = n_lines_bold.value
-  n_lines_long_msg.innerText = n_lines_long.value
-  n_colorH_msg.innerText = n_colorH.value
-  n_colorS_msg.innerText = n_colorS.value
-  n_colorL_msg.innerText = n_colorL.value
-  nb_colorH_msg.innerText = nb_colorH.value
-  nb_colorS_msg.innerText = nb_colorS.value
-  nb_colorL_msg.innerText = nb_colorL.value
-
-  end() ;
-}
-
-function nBold(event) {
-  niji.clearRect(0, 0, canvas_size, canvas_size) ;
-  nColor(Event) ;
-  niji.lineWidth = n_lines_bold.value ;
-  niji.stroke() ;
-}
-
-//瞳孔===================================================================================================
-function dLine(event){
-  doukou.beginPath() ;
-  doukou.clearRect(0, 0, canvas_size, canvas_size) ;
-  doukou.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-
-  doukou.arc(
-    0,  0,  // 円の中心座標
-    d_line_size.value / 2 + d_line_bold.value / 2,           // 半径
-    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
-    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
-    false                   // 方向: true=反時計回りの円、false=時計回りの円
-    ) ;
-  doukou.lineWidth = d_line_bold.value ; //太さ
-
-  dColor(Event) ;
-  doukou.stroke() ;
-  doukou.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
-
-  //表示用
-  d_line_size_msg.innerText = d_line_size.value / 100 + 'mm'
-  d_line_bold_msg.innerText = d_line_bold.value / 100 + 'mm'
-  d_colorH_msg.innerText = d_colorH.value
-  d_colorS_msg.innerText = d_colorS.value
-  d_colorL_msg.innerText = d_colorL.value
-  db_colorH_msg.innerText = db_colorH.value
-  db_colorS_msg.innerText = db_colorS.value
-  db_colorL_msg.innerText = db_colorL.value
-}
-
-function end() {
-  //終端処理
-}
-
-// 色変更系 =====================================================
-function rColor(Event) {
-  rinkaku.strokeStyle = "hsl(" + r_colorH.value + ", " + r_colorS.value + "%, " + r_colorL.value + "%)" ;
-  rinkaku.fillStyle = "hsl(" + nb_colorH.value + ", " + nb_colorS.value + "%, " + nb_colorL.value + "%)" ;
-  rinkaku.fill() ;
-  rinkaku.stroke() ;
-}
-
-function nColor(Event) {
-  niji.strokeStyle = "hsl(" + n_colorH.value + ", " + n_colorS.value + "%, " + n_colorL.value + "%)" ;
-  niji.stroke() ;
-}
-
-function nbColor(Event) {
-  niji.strokeStyle = "hsl(" + nb_colorH.value + ", " + nb_colorS.value + "%, " + nb_colorL.value + "%)" ;
-  niji.stroke() ;
-}
-
-function dColor(Event) {
-  doukou.strokeStyle = "hsl(" + d_colorH.value + ", " + d_colorS.value + "%, " + d_colorL.value + "%)" ;
-  doukou.fillStyle = "hsl(" + db_colorH.value + ", " + db_colorS.value + "%, " + db_colorL.value + "%)" ;
-  doukou.fill() ;
-  doukou.stroke() ;
-}
-
-// 色変更系 =====================================================
-function mLine(event){
-//  mabuta.clearRect(0, 0, canvas_size, canvas_size) ;
-  mabuta.fillStyle = "rgba(255,255,255,255)" ;
-//  mabuta.rect(0, 0, canvas_size, canvas_size); //clear
-
-  mabuta.moveTo(0,410) ;
-  mabuta.lineTo(70,410) ;
-  mabuta.lineTo(260,220) ;
-  mabuta.lineTo(550,150) ;
-  mabuta.lineTo(470,400) ;
-  mabuta.lineTo(71,411) ;
-  mabuta.lineTo(0,411) ;
-  mabuta.lineTo(0,canvas_size) ;
-  mabuta.lineTo(canvas_size,canvas_size) ;
-  mabuta.lineTo(canvas_size,0) ;
-  mabuta.lineTo(0,0) ;
-  mabuta.closePath() ;
-  mabuta.stroke() ;
-  mabuta.fill() ;
-  mabuta.globalAlpha = 128 ;
-}
-
-function init() {
- rLine();
- nLine();
- dLine();
-}
-}
 //画面＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 //https://gray-code.com/javascript/create-new-html-element/
 // ul要素を作成
 //入れ物。実物はappendChildしたやつ。
 
-var canvasName = ["黒目[輪郭]","虹彩","瞳孔","内輪郭","虹彩"];
+var canvasName = ["外郭","黒目[輪郭]","黒目[中輪郭]","虹彩1","虹彩2","瞳孔","内輪郭"];
 var canvasContext = [];
 
 //size,[step, min, max, value]
@@ -228,22 +86,26 @@ var canvasContext = [];
 //collor[H,S,L]
 var preset_param_line = [
 [[100,500,600, 50],[5,5,  5, 5],[0,  0,  5]],    //外郭
-[[ 10,200,300,250],[5,5,100, 5],[0,  0,  5],[0, 90, 80]],    //輪郭
-[[  5,  0,200, 80],[1,0, 20,10],[0,  0,  5],[0, 11, 40]],    //瞳孔
-[[ 10,200,300,240],[5,5,100, 5],[0, 50, 50],[0, 90, 30]],    //内輪郭
+[[ 10,200,300,250],[5,5,100,15],[0,  0,  5],[190, 90, 90]],    //輪郭
+[[ 10,200,300,240],[5,5,100,15],[0, 50, 50],[0, 90, 30]],    //内輪郭
+[[  5,  0,200, 55],[1,0, 20,12],[195,100, 70],[230, 100, 60]],    //瞳孔
 ];
 
 //numOf,[step, min, max, value]
 //bold,[step, min, max, value]
 //long,[step, min, max, value]
+//rad,[step, min, max, value]
 //collor[H,S,L]
 var preset_param_iris = [
-[[  5,0  ,200, 50],[1,1,  5, 1],[10, 40,100, 80],[270,100, 50]],    //虹彩
+[[  5,0  ,200, 20],[1,1,  5, 3],[10, 40,100, 60],[1, 0,360, 0],[270, 95,100]],    //虹彩
+[[  5,0  ,200, 20],[1,1,  5, 3],[10, 40,100, 60],[1, 0,360, 0],[200,100, 45]],    //虹彩
 ];
 
 var ul_element = document.createElement('ul');
 
 function canvasInit (canvasContaier){
+　//初期化
+
 　//レイヤーボタン生成
   var layer_button = document.getElementById('layer_button') ;
   layer_button.appendChild(ul_element) ;
@@ -261,19 +123,21 @@ function canvasInit (canvasContaier){
       canvas.id = i ;
       add(canvas, i);
    }
-    //typeCircleSlider(contextIndex, contextIndexDep, type, createType)
-    //typeIrisSlider(contextIndex, contextIndexDep, type)
-   parameter_set_container.appendChild(typeCircleSlider(1, [2, 3], 1, "r"));　　 //外輪郭
-   parameter_set_container.appendChild(typeIrisLNSlider(2, 1, 0)); 　　　//虹彩
-   parameter_set_container.appendChild(typeIrisLNSlider(3, 1, 0)); 　　　//虹彩
-   parameter_set_container.appendChild(typeCircleSlider(4,"", 2, "r")); 　　//瞳孔
+    //typeCircleSlider(contextIndex, contextIndexDep[], presetType, createType)
+    //typeIrisSlider(contextIndex, contextIndexDep, presetType)
+   parameter_set_container.appendChild(typeCircleSlider(1, [4, 3], 1, "fill"));　　 //外輪郭
+//   parameter_set_container.appendChild(typeCircleSlider(2, [], 2, ""));　　 //中輪郭
+   parameter_set_container.appendChild(typeIrisLNSlider(3, 1, 0)); 　　　//虹彩1
+   parameter_set_container.appendChild(typeIrisLNSlider(4, 1, 1)); 　　　//虹彩2
+   parameter_set_container.appendChild(typeCircleSlider(5, [], 3, "fill")); 　　//瞳孔
 
 　　//初期描画(canvasIndex)
    baseAuto(canvasContext[0]); //外郭
-   rLineAuto(1, [2, 3]);
-   iLineAuto(2, 1);
+   rLineAuto(1, [4, 3]);
+//   rLineAuto(2, []);
    iLineAuto(3, 1);
-   rLineAuto(4);
+   iLineAuto(4, 1);
+   rLineAuto(5, []);
 }
 
 function newCanvas() {
@@ -315,7 +179,7 @@ function add(canvas, index) {
 
     var rm_el = document.createElement('input');
     rm_el.type = "button" ;
-    rm_el.value = "削除";
+    rm_el.value = "表示/非表示";
     rm_el.id = i ;
     rm_el.onclick = function() { rem(rm_el) };
     li_element.appendChild(rm_el)
@@ -326,17 +190,22 @@ function add(canvas, index) {
 function rem(rm_el) {
     var index = rm_el.id;
     var indexChild = parseInt(rm_el.id) + 1;
-
-    canvasName.splice(index, 1); //名前リスト
-    canvasContext.splice(index, 1);　//実Canvas.ojbリスト
-    canvasContaier.removeChild(canvasContaier.childNodes[indexChild]); //canvasHTMLリスト
-    rm_el.parentNode.remove();　//レイヤーボタンリスト
-
-    //レイヤーボタンのindex降り直し
-    var i = 0;
-    Array.from(ul_element.childNodes).forEach(function(li) {
-        li.firstElementChild.id = i;   i++;
-    })
+//
+//    canvasName.splice(index, 1); //名前リスト
+//    canvasContext.splice(index, 1);　//実Canvas.ojbリスト
+//    canvasContaier.removeChild(canvasContaier.childNodes[indexChild]); //canvasHTMLリスト
+//    rm_el.parentNode.remove();　//レイヤーボタンリスト
+//
+//    //レイヤーボタンのindex降り直し
+//    var i = 0;
+//    Array.from(ul_element.childNodes).forEach(function(li) {
+//        li.firstElementChild.id = i;   i++;
+//    })
+    if (canvasContaier.childNodes[indexChild].style.visibility != "hidden") {
+        canvasContaier.childNodes[indexChild].style.visibility = "hidden";
+    } else {
+        canvasContaier.childNodes[indexChild].style.visibility = "visible";
+    }
 }
 
 //輪郭タイプ===================================================================================================
@@ -370,23 +239,34 @@ function baseAuto(context) {
 
 function rLineAuto(contextIndex, contextIndexDepList){
   var context = canvasContext[contextIndex];
+  var containerEL = document.getElementById("container" + contextIndex)
   var sizeEL = document.getElementById("rline_size" + contextIndex)
   var boldEL = document.getElementById("rline_bold" + contextIndex)
+
   context.beginPath() ;
   context.clearRect(0, 0, canvas_size, canvas_size) ;
   context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
 
+  //内輪差がめんどいので、塗りつぶしで輪郭を表現
   context.arc(
     0,  0,  // 円の中心座標
-    sizeEL.value / 2 + boldEL.value / 2,           // 半径
+    sizeEL.value / 2 + boldEL.value / 1,　　　// 半径
     0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
     360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
     false                   // 方向: true=反時計回りの円、false=時計回りの円
-    ) ;
+  ) ;
+  color(contextIndex, "fillOuter") ;
 
-  context.lineWidth = boldEL.value ; //太さ
-  color(contextIndex, "stroke") ;
+  context.beginPath() ;
+  context.arc(
+    0,  0,  // 円の中心座標
+    sizeEL.value / 2,　　　// 半径
+    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
+    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
+    false                   // 方向: true=反時計回りの円、false=時計回りの円
+  ) ;
   color(contextIndex, "fill") ;
+
   context.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
 
   //値表示
@@ -409,7 +289,6 @@ function iLineAuto(contextIndex, contextIndexDep){
   var numOfEL = document.getElementById("iris_numOf" + contextIndex)
   var boldEL = document.getElementById("iris_bold" + contextIndex)
   var longEL = document.getElementById("iris_long" + contextIndex)
-
   var depSizeEL = document.getElementById("rline_size" + contextIndexDep)
   var depBoldEL = document.getElementById("rline_bold" + contextIndexDep)
 
@@ -421,7 +300,7 @@ function iLineAuto(contextIndex, contextIndexDep){
   var rad_now = 0 ;
   var lines = numOfEL.value ;
   var long = longEL.value ;
-  var lise_size = (depSizeEL.value - depBoldEL.value ) / 2
+  var lise_size = (depSizeEL.value) / 2
   if (rad < 10) { rad = 5 ; }
   var rad_now = 360 ;
   if (lines == 0) { rad_now = -1 ; }
@@ -449,6 +328,22 @@ function iLineAuto(contextIndex, contextIndexDep){
   longValueEL.innerText = longEL.value
 }
 
+function iLineRotato(contextIndex, contextIndexDep){
+  var context = canvasContext[contextIndex];
+  var radEL = document.getElementById("iris_rad" + contextIndex) ;
+  context.clearRect(0, 0, canvas_size, canvas_size) ;
+
+  context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
+
+  context.save();
+  context.rotate( 30 * Math.PI / 180 ) ;
+  context.stroke() ;
+
+  context.translate( -canvas_size/2, -canvas_size/2 ) ; //　戻す
+  var radValueEL = radEL.parentNode.lastChild ;
+  radValueEL.innerText = radEL.value
+}
+
 //共通関数
 function typeCircleSlider(contextIndex, contextIndexDep, type, createType) {
     var size_param_Set = preset_param_line[type][0]
@@ -456,34 +351,39 @@ function typeCircleSlider(contextIndex, contextIndexDep, type, createType) {
 
     var container = document.createElement('div');
     container.className = "container" ;
+    container.id = "container" + contextIndex;
+    container.dataset.createType = createType;
 
     var h1 = document.createElement('p') ;
     h1.textContent = canvasName[contextIndex]　; container.appendChild(h1);
     //id, type, step, min, max, value, label
-    var slider_size = sliderCreate(createType + "line_size" + contextIndex, "range", size_param_Set[0], size_param_Set[1], size_param_Set[2], size_param_Set[3], "サイズ") ;
+    var slider_size = sliderCreate("rline_size" + contextIndex, "range", size_param_Set[0], size_param_Set[1], size_param_Set[2], size_param_Set[3], "サイズ") ;
     container.appendChild(slider_size) ;
 
-    var slider_bold = sliderCreate(createType + "line_bold" + contextIndex, "range", bold_param_Set[0], bold_param_Set[1], bold_param_Set[2], bold_param_Set[3], "太さ") ;
+    var slider_bold = sliderCreate("rline_bold" + contextIndex, "range", bold_param_Set[0], bold_param_Set[1], bold_param_Set[2], bold_param_Set[3], "太さ") ;
     container.appendChild(slider_bold) ;
 
 
     var color_param_Set = preset_param_line[type][2] ;
     var h2 = document.createElement('p') ;
     h2.textContent = "輪郭色"　; container.appendChild(h2);
-    var colorH = sliderCreate("colorHstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[0], "色相[H]") ;
+    var colorH = sliderCreate("colorHfillOuter" + contextIndex, "range", 5, 0, 360, color_param_Set[0], "色相[H]") ;
     container.appendChild(colorH) ;
-    var colorS = sliderCreate("colorSstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[1], "彩度[S]") ;
+    var colorS = sliderCreate("colorSfillOuter" + contextIndex, "range", 5, 0, 100, color_param_Set[1], "彩度[S]") ;
     container.appendChild(colorS) ;
-    var colorL = sliderCreate("colorLstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
+    var colorL = sliderCreate("colorLfillOuter" + contextIndex, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
     container.appendChild(colorL) ;
 
     slider_size.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
     slider_bold.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
-    colorH.addEventListener('input', function(){ color(contextIndex, "stroke"); });
-    colorS.addEventListener('input', function(){ color(contextIndex, "stroke"); });
-    colorL.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+//    colorH.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+//    colorS.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+//    colorL.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    colorH.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+    colorS.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+    colorL.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
     
-    if (createType == "r") {
+    if (createType == "fill") {
         var color_param_Set_fill = preset_param_line[type][3] ;
         var h3 = document.createElement('p') ;
         h3.textContent = "塗りつぶし色"　; container.appendChild(h3);
@@ -494,9 +394,12 @@ function typeCircleSlider(contextIndex, contextIndexDep, type, createType) {
         var colorL_fill = sliderCreate("colorLfill" + contextIndex, "range", 5, 0, 100, color_param_Set_fill[2], "輝度[L]") ;
         container.appendChild(colorL_fill) ;
 
-        colorH_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
-        colorS_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
-        colorL_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+//        colorH_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+//        colorS_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+//        colorL_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+        colorH_fill.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+        colorS_fill.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+        colorL_fill.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
     }
 
     return container;
@@ -506,6 +409,8 @@ function typeIrisLNSlider(contextIndex, contextIndexDep, type) {
     var numOf_param_Set = preset_param_iris[type][0]
     var bold_param_Set = preset_param_iris[type][1]
     var long_param_Set = preset_param_iris[type][2]
+//    var rad_param_Set = preset_param_iris[type][3]
+    var color_param_Set = preset_param_iris[type][4] ;
 
     var container = document.createElement('div');
     container.className = "container" ;
@@ -519,12 +424,15 @@ function typeIrisLNSlider(contextIndex, contextIndexDep, type) {
     container.appendChild(slider_bold) ;
     var slider_long = sliderCreate("iris_long" + contextIndex, "range", long_param_Set[0], long_param_Set[1], long_param_Set[2], long_param_Set[3], "長さ") ;
     container.appendChild(slider_long) ;
+//    var slider_rad = sliderCreate("iris_rad" + contextIndex, "range", rad_param_Set[0], rad_param_Set[1], rad_param_Set[2], rad_param_Set[3], "回転角") ;
+//    container.appendChild(slider_rad) ;
 
     slider_numOf.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
     slider_bold.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
     slider_long.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
+//    slider_rad.addEventListener('input', function(){ iLineRotato(contextIndex, contextIndexDep); });
 
-    var color_param_Set = preset_param_iris[type][3] ;
+
     var h2 = document.createElement('p') ;
     h2.textContent = "虹彩色"　; container.appendChild(h2);
     var colorH = sliderCreate("colorHstroke" + contextIndex, "range", 5, 0, 360, color_param_Set[0], "色相[H]") ;
@@ -569,19 +477,20 @@ function color(contextIndex, type) {
   var colorS_EL = document.getElementById("colorS" + type + contextIndex)
   var colorL_EL = document.getElementById("colorL" + type + contextIndex)
 
+  colorH_EL.parentNode.lastChild.innerText = colorH_EL.value
+  colorS_EL.parentNode.lastChild.innerText = colorS_EL.value
+  colorL_EL.parentNode.lastChild.innerText = colorL_EL.value
+
   if (type == "stroke") {
     content.strokeStyle = "hsl(" + colorH_EL.value + ", " + colorS_EL.value + "%, " + colorL_EL.value + "%)" ;
     content.stroke() ;
-  } else if (type == "fill") {
+  } else {
     content.fillStyle = "hsl(" + colorH_EL.value + ", " + colorS_EL.value + "%, " + colorL_EL.value + "%)" ;
     content.fill() ;
   }
 }
 
-// common =====================================================
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
-}
+function getRandomArbitrary(min, max) { return Math.random() * (max - min) + min; }
 
 function iranai(){
   //https://dev.classmethod.jp/references/html5-drag-drop-api-review-dom/
