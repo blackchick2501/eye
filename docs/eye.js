@@ -12,7 +12,7 @@ function getParam( name, url ){
 var canvas_size= 660
 var max_outline_size = 500
 var outline_size_bold = 1
-
+function ira() {
 function base(context) {
   context.translate( canvas_size/2, canvas_size/2 ) ;
   //パスの初期化
@@ -209,35 +209,36 @@ function mLine(event){
   mabuta.globalAlpha = 128 ;
 }
 
-// common =====================================================
-function getRandomArbitrary(min, max) {
-  return Math.random() * (max - min) + min;
-}
-
 function init() {
  rLine();
  nLine();
  dLine();
 }
-
+}
 //画面＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 //https://gray-code.com/javascript/create-new-html-element/
 // ul要素を作成
 //入れ物。実物はappendChildしたやつ。
 
-var canvasName = ["黒目ー輪郭","虹彩","瞳孔","内輪郭"];
+var canvasName = ["黒目[輪郭]","虹彩","瞳孔","内輪郭","虹彩"];
 var canvasContext = [];
 
-//size,
-//step, min, max, value
-//bold,
-//step, min, max, value
-//collor[H,S,L][step, min, max, value]
+//size,[step, min, max, value]
+//bold,[step, min, max, value]
+//collor[H,S,L]
 var preset_param_line = [
-[[100,500,600, 50],[5,5,   5,5],[0,  0,  5]],    //外郭
-[[ 10,200,300,250],[5,5,100, 5],[0,  0,  5]],    //輪郭
-[[  5,  0,200, 80],[1,0, 20,10],[0,  0,  5]],    //瞳孔
-[[ 10,200,300,240],[5,5,100, 5],[0, 50, 50]],    //内輪郭
+[[100,500,600, 50],[5,5,  5, 5],[0,  0,  5]],    //外郭
+[[ 10,200,300,250],[5,5,100, 5],[0,  0,  5],[0, 90, 80]],    //輪郭
+[[  5,  0,200, 80],[1,0, 20,10],[0,  0,  5],[0, 11, 40]],    //瞳孔
+[[ 10,200,300,240],[5,5,100, 5],[0, 50, 50],[0, 90, 30]],    //内輪郭
+];
+
+//numOf,[step, min, max, value]
+//bold,[step, min, max, value]
+//long,[step, min, max, value]
+//collor[H,S,L]
+var preset_param_iris = [
+[[  5,0  ,200, 50],[1,1,  5, 1],[10, 40,100, 80],[270,100, 50]],    //虹彩
 ];
 
 var ul_element = document.createElement('ul');
@@ -260,16 +261,19 @@ function canvasInit (canvasContaier){
       canvas.id = i ;
       add(canvas, i);
    }
-    //typeCircleSlider(contextIndex, type)
-   parameter_set_container.appendChild(typeCircleSlider(1, 1, "r"));
-   parameter_set_container.appendChild(typeCircleSlider(2, 2, "r"));
-   parameter_set_container.appendChild(typeCircleSlider(3, 3, "r"));
+    //typeCircleSlider(contextIndex, contextIndexDep, type, createType)
+    //typeIrisSlider(contextIndex, contextIndexDep, type)
+   parameter_set_container.appendChild(typeCircleSlider(1, [2, 3], 1, "r"));　　 //外輪郭
+   parameter_set_container.appendChild(typeIrisLNSlider(2, 1, 0)); 　　　//虹彩
+   parameter_set_container.appendChild(typeIrisLNSlider(3, 1, 0)); 　　　//虹彩
+   parameter_set_container.appendChild(typeCircleSlider(4,"", 2, "r")); 　　//瞳孔
 
-　　//初期描画
-   baseAuto(canvasContext[0]);
-   rLineAuto(1);
-   rLineAuto(2);
-   rLineAuto(3);
+　　//初期描画(canvasIndex)
+   baseAuto(canvasContext[0]); //外郭
+   rLineAuto(1, [2, 3]);
+   iLineAuto(2, 1);
+   iLineAuto(3, 1);
+   rLineAuto(4);
 }
 
 function newCanvas() {
@@ -336,38 +340,6 @@ function rem(rm_el) {
 }
 
 //輪郭タイプ===================================================================================================
-function rLineAuto(contextIndex){
-  var context = canvasContext[contextIndex];
-  var sizeEL = document.getElementById("rline_size" + contextIndex)
-  var boldEL = document.getElementById("rline_bold" + contextIndex)
-  context.beginPath() ;
-  context.clearRect(0, 0, canvas_size, canvas_size) ;
-  context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-
-  context.arc(
-    0,  0,  // 円の中心座標
-    sizeEL.value / 2 + boldEL.value / 2,           // 半径
-    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
-    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
-    false                   // 方向: true=反時計回りの円、false=時計回りの円
-    ) ;
-
-  var iro = 50 * contextIndex ;
-  context.strokeStyle = "hsl(" + iro + ", 50%, 50%)" ;
-  context.lineWidth = boldEL.value ; //太さ
-  colorLine(contextIndex) ;
-  context.stroke() ;
-  context.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
-
-  //値表示
-  var sizeValueEL = sizeEL.parentNode.lastChild ;
-  var boldValueEL = boldEL.parentNode.lastChild ;
-  sizeValueEL.innerText = sizeEL.value / 100 + 'mm'
-  boldValueEL.innerText = boldEL.value / 100 + 'mm'
-  //サイズ連動
-//  nLine();
-}
-
 function baseAuto(context) {
   context.translate( canvas_size/2, canvas_size/2 ) ;
   //パスの初期化
@@ -396,20 +368,60 @@ function baseAuto(context) {
 
 }
 
-//虹彩===================================================================================================
-function nLineAuto(contextIndex){
+function rLineAuto(contextIndex, contextIndexDepList){
   var context = canvasContext[contextIndex];
-  var sizeEL = document.getElementById("nline_size" + contextIndex)
-  var boldEL = document.getElementById("nline_bold" + contextIndex)
+  var sizeEL = document.getElementById("rline_size" + contextIndex)
+  var boldEL = document.getElementById("rline_bold" + contextIndex)
   context.beginPath() ;
   context.clearRect(0, 0, canvas_size, canvas_size) ;
   context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
-  context.lineWidth = n_lines_bold.value ;
+
+  context.arc(
+    0,  0,  // 円の中心座標
+    sizeEL.value / 2 + boldEL.value / 2,           // 半径
+    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
+    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
+    false                   // 方向: true=反時計回りの円、false=時計回りの円
+    ) ;
+
+  context.lineWidth = boldEL.value ; //太さ
+  color(contextIndex, "stroke") ;
+  color(contextIndex, "fill") ;
+  context.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
+
+  //値表示
+  var sizeValueEL = sizeEL.parentNode.lastChild ;
+  var boldValueEL = boldEL.parentNode.lastChild ;
+  sizeValueEL.innerText = sizeEL.value / 100 + 'mm'
+  boldValueEL.innerText = boldEL.value / 100 + 'mm'
+
+  //サイズ連動
+  if (contextIndexDepList.length > 0 ) {
+      contextIndexDepList.forEach(function(contextIndexDep){
+          iLineAuto(contextIndexDep, contextIndex)
+      })
+  }
+}
+
+//虹彩===================================================================================================
+function iLineAuto(contextIndex, contextIndexDep){
+  var context = canvasContext[contextIndex];
+  var numOfEL = document.getElementById("iris_numOf" + contextIndex)
+  var boldEL = document.getElementById("iris_bold" + contextIndex)
+  var longEL = document.getElementById("iris_long" + contextIndex)
+
+  var depSizeEL = document.getElementById("rline_size" + contextIndexDep)
+  var depBoldEL = document.getElementById("rline_bold" + contextIndexDep)
+
+  context.beginPath() ;
+  context.clearRect(0, 0, canvas_size, canvas_size) ;
+  context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
+  context.lineWidth = boldEL.value ;
 
   var rad_now = 0 ;
-  var lines = n_lines.value ;
-  var long = n_lines_long.value ;
-  var lise_size = (r_line_size.value - r_line_bold.value ) / 2
+  var lines = numOfEL.value ;
+  var long = longEL.value ;
+  var lise_size = (depSizeEL.value - depBoldEL.value ) / 2
   if (rad < 10) { rad = 5 ; }
   var rad_now = 360 ;
   if (lines == 0) { rad_now = -1 ; }
@@ -425,19 +437,20 @@ function nLineAuto(contextIndex){
     rad_now -= rad_run
   }
 
-  nColor(Event) ;
-  context.stroke() ;
+  color(contextIndex, "stroke") ;
   context.translate( -canvas_size/2, -canvas_size/2 ) ; //　戻す
 
   //表示用
-  var sizeValueEL = sizeEL.parentNode.lastChild ;
+  var numOfValueEL = numOfEL.parentNode.lastChild ;
   var boldValueEL = boldEL.parentNode.lastChild ;
-  sizeValueEL.innerText = sizeEL.value / 100 + 'mm'
+  var longValueEL = longEL.parentNode.lastChild ;
+  numOfValueEL.innerText = numOfEL.value + '本'
   boldValueEL.innerText = boldEL.value / 100 + 'mm'
+  longValueEL.innerText = longEL.value
 }
 
 //共通関数
-function typeCircleSlider(contextIndex, type, createType) {
+function typeCircleSlider(contextIndex, contextIndexDep, type, createType) {
     var size_param_Set = preset_param_line[type][0]
     var bold_param_Set = preset_param_line[type][1]
 
@@ -445,7 +458,7 @@ function typeCircleSlider(contextIndex, type, createType) {
     container.className = "container" ;
 
     var h1 = document.createElement('p') ;
-    h1.textContent = "黒目[輪郭]"　; container.appendChild(h1);
+    h1.textContent = canvasName[contextIndex]　; container.appendChild(h1);
     //id, type, step, min, max, value, label
     var slider_size = sliderCreate(createType + "line_size" + contextIndex, "range", size_param_Set[0], size_param_Set[1], size_param_Set[2], size_param_Set[3], "サイズ") ;
     container.appendChild(slider_size) ;
@@ -457,18 +470,73 @@ function typeCircleSlider(contextIndex, type, createType) {
     var color_param_Set = preset_param_line[type][2] ;
     var h2 = document.createElement('p') ;
     h2.textContent = "輪郭色"　; container.appendChild(h2);
-    var colorH = sliderCreate("colorH_stk" + contextIndex, "range", 5, 0, 100, color_param_Set[0], "色相[H]") ;
+    var colorH = sliderCreate("colorHstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[0], "色相[H]") ;
     container.appendChild(colorH) ;
-    var colorS = sliderCreate("colorS_stk" + contextIndex, "range", 5, 0, 100, color_param_Set[1], "彩度[S]") ;
+    var colorS = sliderCreate("colorSstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[1], "彩度[S]") ;
     container.appendChild(colorS) ;
-    var colorL = sliderCreate("colorL_stk" + contextIndex, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
+    var colorL = sliderCreate("colorLstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
     container.appendChild(colorL) ;
 
-    slider_size.addEventListener('input', function(){ rLineAuto(contextIndex); });
-    slider_bold.addEventListener('input', function(){ rLineAuto(contextIndex); });
-    colorH.addEventListener('input', function(){ colorLine(contextIndex); });
-    colorS.addEventListener('input', function(){ colorLine(contextIndex); });
-    colorL.addEventListener('input', function(){ colorLine(contextIndex); });
+    slider_size.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+    slider_bold.addEventListener('input', function(){ rLineAuto(contextIndex, contextIndexDep); });
+    colorH.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    colorS.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    colorL.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    
+    if (createType == "r") {
+        var color_param_Set_fill = preset_param_line[type][3] ;
+        var h3 = document.createElement('p') ;
+        h3.textContent = "塗りつぶし色"　; container.appendChild(h3);
+        var colorH_fill = sliderCreate("colorHfill" + contextIndex, "range", 5, 0, 360, color_param_Set_fill[0], "色相[H]") ;
+        container.appendChild(colorH_fill) ;
+        var colorS_fill = sliderCreate("colorSfill" + contextIndex, "range", 5, 0, 100, color_param_Set_fill[1], "彩度[S]") ;
+        container.appendChild(colorS_fill) ;
+        var colorL_fill = sliderCreate("colorLfill" + contextIndex, "range", 5, 0, 100, color_param_Set_fill[2], "輝度[L]") ;
+        container.appendChild(colorL_fill) ;
+
+        colorH_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+        colorS_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+        colorL_fill.addEventListener('input', function(){ color(contextIndex, "fill"); });
+    }
+
+    return container;
+}
+
+function typeIrisLNSlider(contextIndex, contextIndexDep, type) {
+    var numOf_param_Set = preset_param_iris[type][0]
+    var bold_param_Set = preset_param_iris[type][1]
+    var long_param_Set = preset_param_iris[type][2]
+
+    var container = document.createElement('div');
+    container.className = "container" ;
+
+    var h1 = document.createElement('p') ;
+    h1.textContent = canvasName[contextIndex]　; container.appendChild(h1);
+    //id, type, step, min, max, value, label
+    var slider_numOf = sliderCreate("iris_numOf" + contextIndex, "range", numOf_param_Set[0], numOf_param_Set[1], numOf_param_Set[2], numOf_param_Set[3], "本数") ;
+    container.appendChild(slider_numOf) ;
+    var slider_bold = sliderCreate("iris_bold" + contextIndex, "range", bold_param_Set[0], bold_param_Set[1], bold_param_Set[2], bold_param_Set[3], "太さ") ;
+    container.appendChild(slider_bold) ;
+    var slider_long = sliderCreate("iris_long" + contextIndex, "range", long_param_Set[0], long_param_Set[1], long_param_Set[2], long_param_Set[3], "長さ") ;
+    container.appendChild(slider_long) ;
+
+    slider_numOf.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
+    slider_bold.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
+    slider_long.addEventListener('input', function(){ iLineAuto(contextIndex, contextIndexDep); });
+
+    var color_param_Set = preset_param_iris[type][3] ;
+    var h2 = document.createElement('p') ;
+    h2.textContent = "虹彩色"　; container.appendChild(h2);
+    var colorH = sliderCreate("colorHstroke" + contextIndex, "range", 5, 0, 360, color_param_Set[0], "色相[H]") ;
+    container.appendChild(colorH) ;
+    var colorS = sliderCreate("colorSstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[1], "彩度[S]") ;
+    container.appendChild(colorS) ;
+    var colorL = sliderCreate("colorLstroke" + contextIndex, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
+    container.appendChild(colorL) ;
+
+    colorH.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    colorS.addEventListener('input', function(){ color(contextIndex, "stroke"); });
+    colorL.addEventListener('input', function(){ color(contextIndex, "stroke"); });
 
     return container;
 }
@@ -495,17 +563,27 @@ function sliderCreate(id, type, step, min, max, value, label) {
    return spanEl;
 }
 
-function colorLine(contextIndex) {
+function color(contextIndex, type) {
   var content = canvasContext[contextIndex];
-  var colorH_stkEL = document.getElementById("colorH_stk" + contextIndex)
-  var colorS_stkEL = document.getElementById("colorS_stk" + contextIndex)
-  var colorL_stkEL = document.getElementById("colorL_stk" + contextIndex)
+  var colorH_EL = document.getElementById("colorH" + type + contextIndex)
+  var colorS_EL = document.getElementById("colorS" + type + contextIndex)
+  var colorL_EL = document.getElementById("colorL" + type + contextIndex)
 
-  content.strokeStyle = "hsl(" + colorH_stkEL.value + ", " + colorS_stkEL.value + "%, " + colorL_stkEL.value + "%)" ;
-  content.stroke() ;
+  if (type == "stroke") {
+    content.strokeStyle = "hsl(" + colorH_EL.value + ", " + colorS_EL.value + "%, " + colorL_EL.value + "%)" ;
+    content.stroke() ;
+  } else if (type == "fill") {
+    content.fillStyle = "hsl(" + colorH_EL.value + ", " + colorS_EL.value + "%, " + colorL_EL.value + "%)" ;
+    content.fill() ;
+  }
 }
 
+// common =====================================================
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
+function iranai(){
   //https://dev.classmethod.jp/references/html5-drag-drop-api-review-dom/
 //  var dragElement = null,
 //      items = ul_element.getElementsByTagName("li")
@@ -540,3 +618,4 @@ function colorLine(contextIndex) {
 //      canvasName.addEventListener('drop', dropHandler);
 //    }
 //  );
+}
