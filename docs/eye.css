@@ -1,7 +1,8 @@
 #canvasContainer {
    position: relative;
-   min-width: 660px;
-   min-height 660px;
+   background: white;
+   width: 660px;
+   height: 720px;
 }
 
 .canvaslayer {
@@ -20,7 +21,7 @@
     position: relative;
     margin-right: 10px;
     border: 1px solid #00ff00;
-    min-width: 300px;
+    min-width: 285px;
     min-height: 400px;
 }
 
@@ -35,4 +36,3 @@
     width: 100%;
     display:block;
 }
-
