@@ -10,7 +10,6 @@
   <script src="./config/rinkakuIn.js"></script>
   <script src="./config/rinkakuOut.js"></script>
   <script src="./config/doukou.js"></script>
-  <script src="./eye.js"></script>
 <link href="./eye.css" rel="stylesheet"/>
 
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -20,6 +19,10 @@
 <title>eye</title>
 </head>
 <body>
+<input type="button" value="追加" onclick="newItem()">
+<input type="button" value="初期化" onclick="canvasClear()">
+<div id="layer_button">
+</div>
 <!--canvas描画領域-->
 <div>
   <div id="canvasContainer">
@@ -27,20 +30,15 @@
 </div>
 
 <!--レイヤーボタン操作-->
-<!--<input type="button" value="追加" onclick="newCanvas()">-->
-<!--<input type="button" value="初期化" onclick="canvasInit()">-->
-<div id="layer_button">
-</div>
+
 
 <div id="parameter_set_container">
 </div>
 
+
+<script src="./eye.js"></script>
 <script>
-var canvasContaier = document.getElementById('canvasContainer');
-var parameter_set_container = document.getElementById('parameter_set_container');
-
-canvasInit(canvasContainer);
-
+canvasInit();
 </script>
 </body>
 </html>

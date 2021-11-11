@@ -2,7 +2,7 @@
 let rinkakuOut = jsyaml.load(`
 id: "rinkakuOut"
 name: "黒目[輪郭]"
-dependency: [3,4]
+dependency: [2,3]
 sliderType: "Circle"
 createType: "fill"
 line: #[step, min, max, value]

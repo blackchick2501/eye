@@ -9,9 +9,10 @@ function getParam( name, url ){
 }
 //https://www.yoheim.net/blog.php?q=20170201
 let canvasParam = [] ;
+
 canvasParam.push(Outer)
 canvasParam.push(rinkakuOut)
-canvasParam.push(rinkakuIn)
+//canvasParam.push(rinkakuIn)
 canvasParam.push(Iris1)
 canvasParam.push(Iris2)
 canvasParam.push(doukou)
@@ -23,19 +24,18 @@ var outline_size_bold = 1
 
 //画面＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 //https://gray-code.com/javascript/create-new-html-element/
-// ul要素を作成
-//入れ物。実物はappendChildしたやつ。
+var canvasContaier = document.getElementById('canvasContainer');
+var parameter_set_container = document.getElementById('parameter_set_container');
+var layer_button = document.getElementById('layer_button') ;
 var ul_element = document.createElement('ul');
+layer_button.appendChild(ul_element) ;
 
-function canvasInit (canvasContaier){
-　//レイヤーボタン生成
-  var layer_button = document.getElementById('layer_button') ;
-  layer_button.appendChild(ul_element) ;
-
-  layernum = 7 - canvasParam.length;
-  for(i = 0; i < layernum ; i++ ){
+function canvasInit (){
+  var init_layer = 6 - canvasParam.length;
+  for(i = 1; i < init_layer; i++ ){
+    console.log(i)
       var newItem = newCanvas();
-      canvasParam.push(newItem) ;
+      canvasParam.push(newItem);
   }
 
 　 var initNum = canvasParam.length;
@@ -45,9 +45,19 @@ function canvasInit (canvasContaier){
       canvas.height = canvas_size ;
       canvas.id = index ;
       add(canvas, index);
+      if( index == 0 ){
+        var con = document.createElement("div");
+        parameter_set_container.appendChild(con);
+        continue;
+      }
+      setViewContent(index)
+   }
 
-      if( index == 0 || index == 2 ){ continue; }
+　　//初期描画(canvasIndex)
+   baseAuto(canvasParam[0].context); //外郭
+}
 
+function setViewContent(index) {
       var sliderType = canvasParam[index].sliderType
       var indexDep   = canvasParam[index].dependency
       if (indexDep === undefined) { indexDep = []; }
@@ -61,10 +71,6 @@ function canvasInit (canvasContaier){
           parameter_set_container.appendChild(typeIrisLNSlider(index, indexDep));
           iLineAuto(index, indexDep)
       }
-   }
-
-　　//初期描画(canvasIndex)
-   baseAuto(canvasParam[0].context); //外郭
 }
 
 function newCanvas() {
@@ -73,13 +79,11 @@ function newCanvas() {
           id: valid
           name: valid
           sliderType: "Circle"
-          createType: "fill"
+          createType: "move"
           line: #[step, min, max, value]
-              size:  [1,0,600, 0]
-              bold:  [1,0,600, 0]
-              color: [0,0,0]
-          fill:
-              color: [0,0,0]
+              size:  [1,0,300, 10]
+              bold:  [1,0,300, 5]
+              color: [0,90,90]
     `);
     var id =  "canvas" + index
     newItem.id = id;
@@ -92,6 +96,17 @@ function newCanvas() {
     newItem.context = add_canvas;
 
     return newItem
+}
+
+function newItem() {
+    var newObj = newCanvas();
+    canvasParam.push(newObj);
+
+    var index = canvasParam.length - 1;
+    var canvas = canvasParam[index].context;
+    add(canvas, index);
+
+    setViewContent(index)
 }
 
 function add(canvas, index) {
@@ -111,12 +126,6 @@ function add(canvas, index) {
 
     add_canvas_context = add_canvas.getContext( "2d" ) ;
     canvasParam[index].context = add_canvas_context
-
-    //確認用
-//    var iro = 50 * i ;
-//    add_canvas_context.fillStyle = "hsl(" + iro + ", 50%, 50%)" ;
-//    add_canvas_context.fillRect(10 * i, 10 * i, 10 * i + 10, 20 * i + 10);
-//    add_canvas_context.stroke;
 
     var li_element = document.createElement('div');
     li_element.textContent = canvasParam[index].name;
@@ -150,8 +159,10 @@ function rem(rm_el) {
 //    })
     if (canvasContaier.childNodes[indexChild].style.visibility != "hidden") {
         canvasContaier.childNodes[indexChild].style.visibility = "hidden";
+        parameter_set_container.childNodes[indexChild].style.display = "none";
     } else {
         canvasContaier.childNodes[indexChild].style.visibility = "visible";
+        parameter_set_container.childNodes[indexChild].style.display = "block";
     }
 }
 
@@ -187,6 +198,16 @@ function rLineAuto(index, indexDepList){
   var containerEL = document.getElementById("container" + index)
   var sizeEL = document.getElementById("rline_size" + index)
   var boldEL = document.getElementById("rline_bold" + index)
+  var moveXEL = ""
+  var moveYEL = ""
+  var center_x = 0
+  var center_y = 0
+  if (canvasParam[index].createType == "move") {
+    moveXEL = document.getElementById("rx_move" + index)
+    moveYEL = document.getElementById("ry_move" + index)
+    center_x = moveXEL.value
+    center_y = moveYEL.value
+  }
 
   context.beginPath() ;
   context.clearRect(0, 0, canvas_size, canvas_size) ;
@@ -194,7 +215,7 @@ function rLineAuto(index, indexDepList){
 
   //内輪差がめんどいので、塗りつぶしで輪郭を表現
   context.arc(
-    0,  0,  // 円の中心座標
+    center_x,  center_y,  // 円の中心座標
     sizeEL.value / 2 + boldEL.value / 1,　　　// 半径
     0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
     360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
@@ -202,16 +223,17 @@ function rLineAuto(index, indexDepList){
   ) ;
   color(index, "fillOuter") ;
 
-  context.beginPath() ;
-  context.arc(
-    0,  0,  // 円の中心座標
-    sizeEL.value / 2,　　　// 半径
-    0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
-    360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
-    false                   // 方向: true=反時計回りの円、false=時計回りの円
-  ) ;
-  color(index, "fill") ;
-
+  if (canvasParam[index].createType == "fill") {
+      context.beginPath() ;
+      context.arc(
+        0,  0,  // 円の中心座標
+        sizeEL.value / 2,　　　// 半径
+        0 * Math.PI / 180,      // 開始角度: 0度 (0 * Math.PI / 180)
+        360 * Math.PI / 180,    // 終了角度: 360度 (360 * Math.PI / 180)
+        false                   // 方向: true=反時計回りの円、false=時計回りの円
+      ) ;
+      color(index, "fill") ;
+  }
   context.translate( -canvas_size/2, -canvas_size/2 ) ;	//　戻す
 
   //値表示
@@ -286,9 +308,11 @@ function typeCircleSlider(index, indexDep, createType) {
     //id, type, step, min, max, value, label
     var slider_size = sliderCreate("rline_size" + index, "range", size_param_Set[0], size_param_Set[1], size_param_Set[2], size_param_Set[3], "サイズ") ;
     container.appendChild(slider_size) ;
+    slider_size.addEventListener('input', function(){ rLineAuto(index, indexDep); });
 
     var slider_bold = sliderCreate("rline_bold" + index, "range", bold_param_Set[0], bold_param_Set[1], bold_param_Set[2], bold_param_Set[3], "太さ") ;
     container.appendChild(slider_bold) ;
+    slider_bold.addEventListener('input', function(){ rLineAuto(index, indexDep); });
 
 
     var color_param_Set = canvasParam[index].line.color ;
@@ -301,11 +325,6 @@ function typeCircleSlider(index, indexDep, createType) {
     var colorL = sliderCreate("colorLfillOuter" + index, "range", 5, 0, 100, color_param_Set[2], "輝度[L]") ;
     container.appendChild(colorL) ;
 
-    slider_size.addEventListener('input', function(){ rLineAuto(index, indexDep); });
-    slider_bold.addEventListener('input', function(){ rLineAuto(index, indexDep); });
-//    colorH.addEventListener('input', function(){ color(index, "stroke"); });
-//    colorS.addEventListener('input', function(){ color(index, "stroke"); });
-//    colorL.addEventListener('input', function(){ color(index, "stroke"); });
     colorH.addEventListener('input', function(){ rLineAuto(index, indexDep); });
     colorS.addEventListener('input', function(){ rLineAuto(index, indexDep); });
     colorL.addEventListener('input', function(){ rLineAuto(index, indexDep); });
@@ -321,14 +340,22 @@ function typeCircleSlider(index, indexDep, createType) {
         var colorL_fill = sliderCreate("colorLfill" + index, "range", 5, 0, 100, color_param_Set_fill[2], "輝度[L]") ;
         container.appendChild(colorL_fill) ;
 
-//        colorH_fill.addEventListener('input', function(){ color(index, "fill"); });
-//        colorS_fill.addEventListener('input', function(){ color(index, "fill"); });
-//        colorL_fill.addEventListener('input', function(){ color(index, "fill"); });
         colorH_fill.addEventListener('input', function(){ rLineAuto(index, indexDep); });
         colorS_fill.addEventListener('input', function(){ rLineAuto(index, indexDep); });
         colorL_fill.addEventListener('input', function(){ rLineAuto(index, indexDep); });
     }
 
+    if (createType == "move") {
+        var h3 = document.createElement('p') ;
+        h3.textContent = "表示位置"　; container.appendChild(h3);
+        var slider_x = sliderCreate("rx_move" + index, "range", 1, -canvas_size/2, canvas_size/2, 0, "X") ;
+        container.appendChild(slider_x) ;
+        slider_x.addEventListener('input', function(){ rLineAuto(index, indexDep); });
+
+        var slider_y = sliderCreate("ry_move" + index, "range", 1, -canvas_size/2, canvas_size/2, 0, "Y") ;
+        container.appendChild(slider_y) ;
+        slider_y.addEventListener('input', function(){ rLineAuto(index, indexDep); });
+    }
     return container;
 }
 
@@ -418,3 +445,15 @@ function color(index, type) {
 }
 
 function getRandomArbitrary(min, max) { return Math.random() * (max - min) + min; }
+
+function canvasClear() {
+    canvasContaier.innerHTML = '';
+    parameter_set_container.innerHTML = '';
+    ul_element.innerHTML = '';
+
+    canvasParam.forEach(function(item){
+        item.context = undefined;
+    });
+
+    canvasInit();
+}

@@ -2,7 +2,7 @@
    position: relative;
    background: white;
    width: 660px;
-   height: 720px;
+   height: 680px;
 }
 
 .canvaslayer {
@@ -22,17 +22,24 @@
     margin-right: 10px;
     border: 1px solid #00ff00;
     min-width: 285px;
-    min-height: 400px;
+    min-height: 430px;
 }
 
 .container p {
-    margin-top: 10px;
+    font-size: 22px;
+    margin-top: 20px;
     margin-bottom: 1px;
     margin-left 100px;
     min-width: 100%;
 }
 
 .container span {
+    font-size: 14px;
     width: 100%;
     display:block;
+}
+
+#layer_button ul{
+    width: 250px;
+    text-align: right;
 }
