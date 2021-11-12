@@ -3,6 +3,7 @@
    background: white;
    width: 660px;
    height: 680px;
+    border: 1px solid #000000;
 }
 
 .canvaslayer {
