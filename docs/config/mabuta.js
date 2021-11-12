@@ -27,6 +27,6 @@ sliderAll:
         paramSet: [5,-600,600,0]
       - idName: "move_img_rad"
         label: "回転"
-        paramSet: [5,0,360,0]
+        paramSet: [10,-180,180,0]
 
 `);

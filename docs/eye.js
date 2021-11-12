@@ -408,10 +408,12 @@ function moveImage(canvasOBJ) {
     var moveXEL = document.getElementById("move_img_x" + index)
     var moveYEL = document.getElementById("move_img_y" + index)
     var scaleEL = document.getElementById("move_img_scale" + index)
+    var radEL = document.getElementById("move_img_rad" + index)
 
     context.beginPath() ;
     context.clearRect(0, 0, canvas_size, canvas_size) ;
     context.translate( canvas_size/2, canvas_size/2 ) ;	// 1: 水平位置、垂直位置をcanvasの半分だけずらして
+    context.rotate( radEL.value * Math.PI / 180) ;
 
     var x = moveXEL.value
     var y = moveYEL.value
@@ -425,7 +427,19 @@ function moveImage(canvasOBJ) {
         scale　　//画像サイズy
     );
 
+    context.rotate( - radEL.value * Math.PI / 180) ; //　戻す
     context.translate( -canvas_size/2, -canvas_size/2 ) ; //　戻す
+
+    //値表示
+    var moveXValueEL = moveXEL.parentNode.lastChild ;
+    var moveXValueEL = moveYEL.parentNode.lastChild ;
+    var scaleValueEL = scaleEL.parentNode.lastChild ;
+    var radValueEL = radEL.parentNode.lastChild ;
+
+    moveXValueEL.innerText = moveXEL.value / 100 + 'mm'
+    moveXValueEL.innerText = moveYEL.value / 100 + 'mm'
+    scaleValueEL.innerText = scaleEL.value
+    radValueEL.innerText = radEL.value
 }
 
 function sliderCreate(id, type, step, min, max, value, label) {
