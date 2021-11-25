@@ -72,8 +72,12 @@ function typeCommonSlider(canvasOBJ) {
 
     var container = document.createElement('div');
     container.className = "container" ;
-    container.id = "container" + index;
+    if (canvasOBJ.id === undefined) { container.id = "container" + index; }
+    else { container.id = canvasOBJ.id + "Container"; }
+
     container.textContent = canvasOBJ.name;
+    var initEL = createInitBottun(canvasOBJ) ;
+    container.appendChild(initEL) ;
     container.appendChild(document.createElement('hr'))
 
     canvasOBJ.sliderAll.forEach(function(sliderList){
@@ -101,4 +105,23 @@ function typeCommonSlider(canvasOBJ) {
     });
 
     return container;
+}
+function createInitBottun(canvasOBJ) {
+    var initEL = document.createElement('input');
+    initEL.type = "button" ;
+    initEL.value = "初期値へ";
+//    initEL.id = canvasOBJ;
+    canvasOBJ.initEL = initEL ;
+    initEL.onclick = function() {
+        canvasOBJ.sliderAll.forEach(function(sliderList){
+            sliderList.List.forEach(function(slider){
+                var EL = document.getElementById(slider.idName + canvasOBJ.index) ;
+                EL.value = slider.paramSet[3] ;
+            })
+        })
+        if (canvasOBJ.sliderType == "Circle") { rLineAuto(canvasOBJ) }
+        if (canvasOBJ.sliderType == "Iris") { iLineAuto(canvasOBJ) }
+        if (canvasOBJ.sliderType == "Img") { moveImage(canvasOBJ) }
+    };
+    return initEL
 }

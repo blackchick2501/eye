@@ -57,7 +57,7 @@ canvasContaier.height = canvas_size;
 
 //初期画面＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
 function canvasInit (){
-　  var initNum = canvasParam.length;
+    var initNum = canvasParam.length;
     var index = 0;
     console.log(canvasParam.length)
     canvasParam.forEach(function(canvasOBJ){

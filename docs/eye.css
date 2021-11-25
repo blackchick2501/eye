@@ -1,3 +1,8 @@
+#concon {
+    float: left;
+    background: white;
+    border: 1px solid #4466aa;
+}
 #controle_container {
     float: left;
     width: 680px;
