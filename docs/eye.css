@@ -1,46 +1,98 @@
-#canvasContainer {
-   position: relative;
-   background: white;
-   width: 660px;
-   height: 680px;
+#controle_container {
+    float: left;
+    width: 680px;
+    height: 370px;
+    background: white;
+    border: 1px solid #00ffaa;
+}
+
+#layer_button{
+    float: left;
+    display: block;
+    border: 1px solid #ff0000;
+}
+
+#mabutaLayer{
+    float: left;
+    border: 1px solid #0ff000;
+}
+
+#layer_button ul{
+    display: block;
+    width: 250px;
+    text-align: right;
+    border: 1px solid #ff0000;
+}
+
+#container5{
+    min-height: 100px;
+}
+
+#kaoContainer {
+    float: left;
+    position: relative;
+    background: white;
+    width: 680px;
+    height: 680px;
     border: 1px solid #000000;
+}
+#kaoCanvas {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border: 1px solid #0022aa;
+}
+#mabutaCanvas {
+    position: absolute;
+    top: 0px;
+    left: 180px;
+    border: 1px solid #0022aa;
+}
+
+#canvasContainer {
+    position: relative;
+    background: white;
+    border: 0px solid #000000;
+    top: 0px;
+    left: 180px;
 }
 
 .canvaslayer {
     position: absolute;
     top: 0px;
     left: 0px;
-    border: 1px solid #000000;
+    border: 0px solid #000000;
 }
 
 #parameter_set_container {
-//    border: 4px solid #003300;
+    border: 5px solid #003300;
+    background: white;
 }
 
 .container {
     float: left;
     position: relative;
     margin-right: 10px;
-    border: 1px solid #00ff00;
-    min-width: 285px;
-    min-height: 430px;
+    border: 3px solid #000000;
+    min-height: 350px;
+    margin-top: 10px;
 }
 
 .container p {
-    font-size: 22px;
-    margin-top: 20px;
-    margin-bottom: 1px;
-    margin-left 100px;
-    min-width: 100%;
+    position: absolute;
+    font-size: 15px;
+    text-orientation: upright;
+    -webkit-writing-mode: vertical-rl;
+    -ms-writing-mode: tb-rl;
+    writing-mode: vertical-rl;
+    margin-left: 0px;
+    margin-top: 10px;
 }
 
 .container span {
     font-size: 14px;
-    width: 100%;
-    display:block;
-}
-
-#layer_button ul{
-    width: 250px;
-    text-align: right;
+//    width: 100%;
+    min-width: 290px;
+    margin-left: 30px;
+    display: block;
 }

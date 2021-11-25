@@ -5,19 +5,13 @@ name: "黒目[輪郭]"
 dependency: [2,3]
 sliderType: "Circle"
 createType: "fill"
-# line2:
-#     size:  [10,200,300,250]
-#     bold:  [5,5,100,15]
-#     color: [0,0,5]
-# fill2:
-#     color: [190,90,90]
 sliderAll:
   - Name: "輪郭"
     id: "line"
     List:
       - idName: "rline_size"
         label: "サイズ"
-        paramSet: [10,200,300,250]
+        paramSet: [10,80,400,250]
       - idName: "rline_bold"
         label: "太さ"
         paramSet: [5,5,100,15]
@@ -35,7 +29,7 @@ sliderAll:
         label: "輝度[L]"
         paramSet: [5,0,100,5]
 
-  - Name: "塗りつぶし色"
+  - Name: "塗り色"
     id: "fill"
     List:
       - idName: "colorHfill"

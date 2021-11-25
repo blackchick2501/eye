@@ -1,10 +1,10 @@
 
-let mabuta = jsyaml.load(`
-id: "mabuta"
-name: "まぶた"
+let kao = jsyaml.load(`
+id: "kao"
+name: "顔"
 sliderType: "Img"
-createType: "mabuta"
-url: "./img/mabuta.png"
+createType: "kao"
+url: "./img/kao.png"
 sliderAll:
   - Name: "位置"
     id: "move"

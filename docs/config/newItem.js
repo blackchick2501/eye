@@ -1,15 +1,10 @@
 
-let doukou = jsyaml.load(`
-id: "doukou"
-name: "瞳孔"
+function createNewItem() {
+var newItem = jsyaml.load(`
+id: "new"
+name: "new"
 sliderType: "Circle"
 createType: "fill"
-# line: #[step, min, max, value]
-#     size:  [5,0,200,55]
-#     bold:  [1,0,20,12]
-#     color: [195,100,70]
-# fill:
-#     color: [230,100,60]
 sliderAll:
   - Name: "輪郭"
     List:
@@ -42,3 +37,5 @@ sliderAll:
         label: "輝度[L]"
         paramSet: [5,0,100,60]
 `);
+return newItem
+}
