@@ -1,6 +1,5 @@
 
 let rinkakuOut = jsyaml.load(`
-id: "rinkakuOut"
 name: "黒目[輪郭]"
 dependency: [2,3]
 sliderType: "Circle"

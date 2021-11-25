@@ -2,10 +2,12 @@
 let mabuta = jsyaml.load(`
 id: "mabuta"
 name: "まぶた"
-index: ""
 sliderType: "Img"
 createType: "mabuta"
 url: "./img/mabuta.png"
+urlList:
+  - "./img/mabuta.png"
+  - "./img/mabuta2.png"
 sliderAll:
   - Name: "位置"
     id: "move"
@@ -29,5 +31,4 @@ sliderAll:
       - idName: "move_img_rad"
         label: "回転"
         paramSet: [1,-180,180,0]
-
 `);

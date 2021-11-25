@@ -1,6 +1,5 @@
 
 let rinkakuIn = jsyaml.load(`
-id: "rinkakuIn"
 name: "黒目[中輪郭]"
 sliderType: "Circle"
 createType: "line"

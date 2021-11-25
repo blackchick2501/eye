@@ -2,20 +2,13 @@
 function createLayerBottun(canvasOBJ) {
     var li_element = document.createElement('div');
     li_element.textContent = canvasOBJ.name;
-    li_element.class = "item"
-    li_element.style.border = "1px solid #000000" ;
+    li_element.class = "layerBottun"
 
-    var visibilityEL = document.createElement('input');
-    visibilityEL.type = "button" ;
-    visibilityEL.value = "表示/非表示";
-    visibilityEL.id = "visibility" + canvasOBJ.index ;
+    var visibilityEL = createBottun('表示/非表示', "visibility" + canvasOBJ.index);
     visibilityEL.onclick = function() { hidden(canvasOBJ) };
     li_element.appendChild(visibilityEL)
 
-    var dropEL = document.createElement('input');
-    dropEL.type = "button" ;
-    dropEL.value = "削除";
-    dropEL.id = "drop" + canvasOBJ.index ;
+    var dropEL = createBottun('削除', "drop" + canvasOBJ.index);
     canvasOBJ.dropEL = dropEL ;
     dropEL.onclick = function() { drop(canvasOBJ) };
     li_element.appendChild(dropEL)
@@ -62,6 +55,7 @@ function drop(canvasOBJ) {
 }
 
 function typeCommonSlider(canvasOBJ) {
+    if (canvasOBJ.index === undefined) { canvasOBJ.index = "" }
     var index = canvasOBJ.index
 
     if (canvasOBJ.sliderType == "Img") {
@@ -87,7 +81,7 @@ function typeCommonSlider(canvasOBJ) {
 
         var functionType = sliderList.functionType
         sliderList.List.forEach(function(slider){
-            slider = sliderCreate(slider.idName + index, "range", slider.paramSet[0], slider.paramSet[1], slider.paramSet[2], slider.paramSet[3], slider.label) ;
+            var slider = sliderCreate(slider.idName + index, "range", slider.paramSet[0], slider.paramSet[1], slider.paramSet[2], slider.paramSet[3], slider.label) ;
             container.appendChild(slider) ;
             //スライダーの種類でイベントを分ける。
             if (canvasOBJ.sliderType == "Circle") {
@@ -100,17 +94,18 @@ function typeCommonSlider(canvasOBJ) {
             if (canvasOBJ.sliderType == "Img") {
                 slider.addEventListener('input', function(){ moveImage(canvasOBJ); });
             }
+            if (canvasOBJ.sliderType == "Move") {
+                slider.addEventListener('input', function(){ moveCanvas(canvasOBJ); });
+            }
         });
         container.appendChild(document.createElement('hr'))
     });
 
     return container;
 }
+
 function createInitBottun(canvasOBJ) {
-    var initEL = document.createElement('input');
-    initEL.type = "button" ;
-    initEL.value = "初期値へ";
-//    initEL.id = canvasOBJ;
+    var initEL = createBottun("初期値へ")
     canvasOBJ.initEL = initEL ;
     initEL.onclick = function() {
         canvasOBJ.sliderAll.forEach(function(sliderList){

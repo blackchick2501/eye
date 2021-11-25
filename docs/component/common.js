@@ -62,3 +62,12 @@ function pathCircle(context, x, y, r) {
      false                   // 方向: true=反時計回りの円、false=時計回りの円
    );
 }
+
+function createBottun(label, id) {
+     var bottunEL = document.createElement('input');
+     bottunEL.type = "button" ;
+     bottunEL.value = label;
+     bottunEL.id = id ;
+
+     return bottunEL
+}

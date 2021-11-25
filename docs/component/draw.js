@@ -30,7 +30,31 @@ function mabutaInit() {
 
     mabutaLayer.appendChild(typeCommonSlider(canvasOBJ)) ;
     moveImage(canvasOBJ);
+
+    //まぶた変更ボタン
+    var containerEL = document.getElementById("mabutaContainer") ;
+    var i = 1;
+    canvasOBJ.urlList.forEach(function(url){
+        var changeEL = createBottun("まぶた変更" + i)
+        changeEL.onclick = function() { mabutaChange(canvasOBJ, url) };
+        containerEL.appendChild(changeEL)
+        i++
+    });
+
+    //まぶたごと移動
+    var canvasOBJ = meMove;
+    mabutaLayer.appendChild(typeCommonSlider(canvasOBJ)) ;
+
 }
+
+function mabutaChange(canvasOBJ, url) {
+    canvasOBJ.imageOBJ.src = url
+    moveImage(canvasOBJ);
+}
+//輪郭タイプ===================================================================================================
+function kyoro() {
+}
+
 
 //輪郭タイプ===================================================================================================
 function baseAuto(context) {
@@ -209,4 +233,21 @@ function moveImage(canvasOBJ) {
     scaleXValueEL.innerText = scale_xEL.value
     scaleYValueEL.innerText = scale_yEL.value
     radValueEL.innerText = radEL.value
+}
+
+//輪郭タイプ===================================================================================================
+function moveCanvas(canvasOBJ) {
+    var canvasContaierMoveEL = document.getElementById("canvasContainer") ;
+    var moveXEL = document.getElementById("me_move_left")
+    var moveYEL = document.getElementById("me_move_top")
+
+    canvasContaierMoveEL.style.top = moveYEL.value/1 + "px";
+    canvasContaierMoveEL.style.left = moveXEL.value/1 + 180 + "px";
+
+    //値表示
+    var moveXValueEL = moveXEL.parentNode.lastChild ;
+    var moveYValueEL = moveYEL.parentNode.lastChild ;
+
+    moveXValueEL.innerText = moveXEL.value / 100 + 'mm'
+    moveYValueEL.innerText = moveYEL.value / 100 + 'mm'
 }

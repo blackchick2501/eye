@@ -1,6 +1,5 @@
 
 let Iris2 = jsyaml.load(`
-id: "Iris2"
 name: "虹彩2"
 dependency: [1]
 sliderType: "Iris"

@@ -1,15 +1,8 @@
 
 let doukou = jsyaml.load(`
-id: "doukou"
 name: "瞳孔"
 sliderType: "Circle"
 createType: "fill"
-# line: #[step, min, max, value]
-#     size:  [5,0,200,55]
-#     bold:  [1,0,20,12]
-#     color: [195,100,70]
-# fill:
-#     color: [230,100,60]
 sliderAll:
   - Name: "輪郭"
     List:
@@ -21,7 +14,7 @@ sliderAll:
         paramSet: [1,0,20,12]
   - Name: "輪郭色"
     List:
-      - idName: "colorHfill"
+      - idName: "colorHfillOuter"
         label: "色相[H]"
         paramSet: [5,0,360,195]
       - idName: "colorSfill"
@@ -32,7 +25,7 @@ sliderAll:
         paramSet: [5,0,100,70]
   - Name: "塗り色"
     List:
-      - idName: "colorHfillOuter"
+      - idName: "colorHfill"
         label: "色相[H]"
         paramSet: [5,0,360,230]
       - idName: "colorSfillOuter"

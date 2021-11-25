@@ -55,7 +55,7 @@
 }
 
 #canvasContainer {
-    position: relative;
+    position: absolute;
     background: white;
     border: 0px solid #000000;
     top: 0px;
@@ -100,4 +100,9 @@
     min-width: 290px;
     margin-left: 30px;
     display: block;
+}
+
+#meMoveSlider {
+    height: 200px;
+    background: white;
 }

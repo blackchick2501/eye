@@ -1,7 +1,6 @@
 
 function createNewItem() {
 var newItem = jsyaml.load(`
-id: "new"
 name: "new"
 sliderType: "Circle"
 createType: "fill"
